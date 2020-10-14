@@ -33,7 +33,7 @@ class app():
         self.answer = StringVar()
 
         loginEntry = Entry(textvariable = self.login, width = '30')
-        passwordEntry = Entry(textvariable = self.password, width = '30')
+        passwordEntry = Entry(textvariable = self.password,show='*', width = '30')
         loginEntry.place(x = 80, y = 25)
         passwordEntry.place(x = 80, y = 50)
 
@@ -119,7 +119,7 @@ class bot(app):
         for message in reversed(messages):
             wait(self.browser,10).until(cond.visibility_of_element_located((By.XPATH,'/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/table[2]')))
             message.click()
-            if self.config['consoleReadingMessages']:
+            if self.config['consoleReadingMessages']==True:
                 print('_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _')
                 for i in range(3):
                     print('\n')
@@ -147,7 +147,7 @@ class bot(app):
         try:
             with open('config.json','r') as f:
                 self.config = json.load(f)
-            if self.config['windowMode']:        
+            if self.config['windowMode']==True:        
                 self.browser = webdriver.Chrome(executable_path=r'.\chromedriver.exe')
             else:
                 options = Options()
