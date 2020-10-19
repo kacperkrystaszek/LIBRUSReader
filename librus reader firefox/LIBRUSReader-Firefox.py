@@ -53,7 +53,9 @@ class app():
         self.window.mainloop()
         
     def zapiszDane(self):
-        data = {'login':self.login.get(),'password':self.password.get(),'windowMode':self.windowMode.get(),'consoleReadingMessages':self.consoleReadingMessages.get(),'answer':self.answer.get('1.0','end-1c')}
+        data = {'login':self.login.get(),'password':self.password.get(),'windowMode':self.windowMode.get(),'consoleReadingMessages':self.consoleReadingMessages.get(),'answer':None}
+        if len(self.answer.get()) > 0:
+            data['answer'] = self.answer.get('1.0','end-1c')
         with open('config.json','w') as f:
             json.dump(data,f)
         self.window.destroy()
@@ -97,7 +99,7 @@ class bot(app):
                     if len(messages) >0:
                         print('Są wiadomości, czytam...')
                         while len(messages) > 0:
-                            self.readingMessages(messages)
+                            self.readingMessages()
                         self.browser.find_element_by_partial_link_text('Poprzednia').click()
                     else:
                         print('Nie ma wiadomości')
@@ -108,14 +110,16 @@ class bot(app):
                     messages = messagesBody.find_elements_by_xpath("//tr/td[@style = 'font-weight: bold;']/a")
                     if len(messages) > 0:  
                         print('Są wiadomości czytam')
-                        self.readingMessages(messages)
+                        self.readingMessages()
                     else:
                         czas = random.randrange(30,120)
                         print(f'Nie ma wiadomości, czekam {czas} sekund i odświeżam')
                         sleep(czas)
                         self.browser.find_element_by_id('icon-wiadomosci').click()
         
-    def readingMessages(self,messages):
+    def readingMessages(self):
+        messagesBody = self.browser.find_element_by_xpath(("//table[@class='decorated stretch']/tbody"))
+        messages = messagesBody.find_elements_by_xpath("//tr/td[@style = 'font-weight: bold;']/a")
         for message in reversed(messages):
             wait(self.browser,10).until(cond.visibility_of_element_located((By.XPATH,'/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/table[2]')))
             message.click()
@@ -128,7 +132,7 @@ class bot(app):
                 lyrics = self.browser.find_element_by_xpath('/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/div')
                 print(lyrics.text+'\n','_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _')
                 self.browser.find_element_by_xpath('/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/table[1]/tbody/tr/td/input[4]').click() 
-            if len(self.config['answer'])>0:
+            if len(self.config['answer']):
                 print('Odpisuję...\n',self.config['answer'])
                 self.browser.find_element_by_xpath('/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/table[1]/tbody/tr/td/input[2]').click()
                 sleep(3)

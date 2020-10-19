@@ -97,7 +97,7 @@ class bot(app):
                     if len(messages) >0:
                         print('Są wiadomości, czytam...')
                         while len(messages) > 0:
-                            self.readingMessages(messages)
+                            self.readingMessages()
                         self.browser.find_element_by_partial_link_text('Poprzednia').click()
                     else:
                         print('Nie ma wiadomości')
@@ -108,14 +108,16 @@ class bot(app):
                     messages = messagesBody.find_elements_by_xpath("//tr/td[@style = 'font-weight: bold;']/a")
                     if len(messages) > 0:  
                         print('Są wiadomości czytam')
-                        self.readingMessages(messages)
+                        self.readingMessages()
                     else:
                         czas = random.randrange(30,120)
                         print(f'Nie ma wiadomości, czekam {czas} sekund i odświeżam')
                         sleep(czas)
                         self.browser.find_element_by_id('icon-wiadomosci').click()
         
-    def readingMessages(self,messages):
+    def readingMessages(self):
+        messagesBody = self.browser.find_element_by_xpath(("//table[@class='decorated stretch']/tbody"))
+        messages = messagesBody.find_elements_by_xpath("//tr/td[@style = 'font-weight: bold;']/a")
         for message in reversed(messages):
             wait(self.browser,10).until(cond.visibility_of_element_located((By.XPATH,'/html/body/div[3]/div[3]/form/div/div/table/tbody/tr/td[2]/table[2]')))
             message.click()
